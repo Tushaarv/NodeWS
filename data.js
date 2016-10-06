@@ -32,7 +32,7 @@ exports.read = function(req, res) {
     con.query('SELECT * FROM employees',function(err,rows){
       if(err) {
         res.send({'error':'An error has occurred'});
-        throw err;
+        // throw err;
       }
       else {
         res.send(rows);
@@ -107,7 +107,7 @@ exports.create = function(req, res) {
 //   }
 // );
 
-exports.updateWine = function(req, res) {
+exports.update = function(req, res) {
     var id = req.params.id;
     var user = req.body;
 
@@ -195,8 +195,8 @@ exports.delete = function(req, res) {
     );
 }
 
-con.end(function(err) {
-  // The connection is terminated gracefully
-  // Ensures all previously enqueued queries are still
-  // before sending a COM_QUIT packet to the MySQL server.
-});
+// con.end(function(err) {
+//   // The connection is terminated gracefully
+//   // Ensures all previously enqueued queries are still
+//   // before sending a COM_QUIT packet to the MySQL server.
+// });
