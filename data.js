@@ -16,9 +16,22 @@ dbObject.connect(function(err) {
     console.log('Connection established');
 });
 
+var getTableName = function(request) {
+  var tableName = request.route.path;
+  console.log(tableName);
+  tableName = tableName.substring(1, tableName.length);
+  console.log(tableName);
+  if(tableName.indexOf('/') > 1 ) {
+    tableName = tableName.substring(0, tableName.indexOf('/'));
+  }
+  console.log(tableName);
+  return tableName;
+};
+
 // Read all rows in User Table
-exports.read = function(request, response) {
-    dbObject.query('SELECT * FROM employees', function(errorReceived, result) {
+exports.read = function(request,response) {
+    var tableName = getTableName(request);
+    dbObject.query('SELECT * FROM ' + tableName, function(errorReceived, result) {
         if (errorReceived) {
             response.send({
                 'error': 'An error has occurred' + errorReceived
@@ -32,8 +45,9 @@ exports.read = function(request, response) {
 // Read a row in User Table matching supplied id
 exports.readById = function(request, response) {
     var requestObjectId = request.params.id;
+    var tableName = getTableName(request);
     console.log('Retrieving : ' + requestObjectId);
-    dbObject.query('SELECT * FROM employees Where ID = ?', [requestObjectId], function(errorReceived, result) {
+    dbObject.query('SELECT * FROM '+ tableName + ' Where ID = ?', [requestObjectId], function(errorReceived, result) {
         if (errorReceived) {
             response.send({
                 'error': 'An error has occurred \n' + errorReceived
@@ -48,7 +62,9 @@ exports.readById = function(request, response) {
 exports.create = function(request, response) {
     var requestObject = request.body;
     console.log('Adding : ' + JSON.stringify(requestObject));
-    dbObject.query('INSERT INTO employees SET ?', requestObject, function(errorReceived, result) {
+    var tableName = getTableName(request);
+    console.log(tableName);
+    dbObject.query('INSERT INTO ' + tableName + ' SET ?', requestObject, function(errorReceived, result) {
         if (errorReceived) {
             response.send({
                 'error': 'An error has occurred \n' + errorReceived
@@ -67,9 +83,10 @@ exports.update = function(request, response) {
 
     console.log('Updating : ' + requestObjectId);
     console.log(JSON.stringify(requestObject));
+    var tableName = getTableName(request);
 
     dbObject.query(
-        'UPDATE employees SET ? Where ID = ?', [requestObject, requestObjectId],
+        'UPDATE ' + tableName + ' SET ? Where ID = ?', [requestObject, requestObjectId],
         function(errorReceived, result) {
             if (errorReceived) {
                 console.log('Error updating User: ' + errorReceived);
@@ -89,8 +106,10 @@ exports.update = function(request, response) {
 exports.delete = function(request, response) {
     var requestObjectId = request.params.id;
     console.log('Deleting : ' + requestObjectId);
+    var tableName = getTableName(request);
+
     dbObject.query(
-        'DELETE FROM employees WHERE id = ?', [requestObjectId],
+        'DELETE FROM ' + tableName + ' WHERE id = ?', [requestObjectId],
         function(errorReceived, result) {
             if (errorReceived) {
                 response.send({
